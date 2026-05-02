@@ -59,21 +59,21 @@ public abstract class AbstractConsoleView implements ConsoleView
 
   /**
    * Formats a long value containing "number of bytes" to its megabyte representation.
-   * If the value is negative, "n/a" will be returned.
-   *
-   * TODO: implement automatic scale to bigger units if this makes sense
-   * (e.g. output 4.3g instead of 4324m)
-   *
-   * @param bytes
-   * @return
+   * Automatically scales to KB, MB, or GB for better readability.
    */
   public String toMB(long bytes)
   {
-    if(bytes<0)
+    if (bytes < 0)
     {
       return "n/a";
     }
-    return "" + (bytes / 1024 / 1024) + "m";
+    if (bytes < 1024 * 1024) {
+        return (bytes / 1024) + "k";
+    } else if (bytes < 1024L * 1024 * 1024) {
+        return (bytes / 1024 / 1024) + "m";
+    } else {
+        return String.format("%.1fg", bytes / 1024.0 / 1024 / 1024);
+    }
   }
 
   /**
@@ -157,33 +157,20 @@ public abstract class AbstractConsoleView implements ConsoleView
 
   /**
    * Sorts a Map by its values, using natural ordering.
-   *
-   * @param map
-   * @param reverse
-   * @return
    */
-  public Map sortByValue(Map map, boolean reverse)
+  public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map, boolean reverse)
   {
-    List list = new LinkedList(map.entrySet());
-    Collections.sort(list, new Comparator()
-    {
-      @Override
-      public int compare(Object o1, Object o2)
-      {
-        return ((Comparable) ((Map.Entry) (o1)).getValue())
-            .compareTo(((Map.Entry) (o2)).getValue());
-      }
-    });
+    List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+    list.sort(Map.Entry.comparingByValue());
 
     if (reverse)
     {
       Collections.reverse(list);
     }
 
-    Map result = new LinkedHashMap();
-    for (Iterator it = list.iterator(); it.hasNext();)
+    Map<K, V> result = new LinkedHashMap<>();
+    for (Map.Entry<K, V> entry : list)
     {
-      Map.Entry entry = (Map.Entry) it.next();
       result.put(entry.getKey(), entry.getValue());
     }
     return result;

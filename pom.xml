@@ -14,20 +14,11 @@
             <artifactId>jopt-simple</artifactId>
             <version>4.5</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>${jdk.version}</version>
-            <scope>system</scope>
-            <systemPath>${toolsjar}</systemPath>
-        </dependency>
     </dependencies>
 
 
     <properties>
-        <!-- change it to point to your tools.jar from your JDK -->
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-        <jdk.version>1.6</jdk.version>
+        <jdk.version>17</jdk.version>
     </properties>
 
     <build>
@@ -73,10 +64,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
+                    <compilerArgs>
+                        <arg>--add-modules</arg>
+                        <arg>jdk.management.agent,jdk.internal.jvmstat,jdk.attach</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>jdk.management.agent/jdk.internal.agent=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.rmi/sun.rmi.server=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.rmi/sun.rmi.transport=ALL-UNNAMED</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

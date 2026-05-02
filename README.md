@@ -1,21 +1,18 @@
-<b>jvmtop</b> is a lightweight console application to monitor all accessible, running jvms on a machine.<br>
-In a top-like manner, it displays <a href='https://github.com/patric-r/jvmtop/blob/master/doc/ExampleOutput.md'>JVM internal metrics</a> (e.g. memory information) of running java processes.<br>
-<br>
-Jvmtop does also include a <a href='https://github.com/patric-r/jvmtop/blob/master/doc/ConsoleProfiler.md'>CPU console profiler</a>.<br>
-<br>
-It's tested with different releases of Oracle JDK, IBM JDK and OpenJDK on Linux, Solaris, FreeBSD and Windows hosts.<br>
-Jvmtop requires a JDK - a JRE will not suffice.<br>
-<br>
-Please note that it's currently in an alpha state -<br>
-if you experience an issue or need further help, please <a href='https://github.com/patric-r/jvmtop/issues'>let us know</a>.<br>
-<br>
-Jvmtop is open-source. Checkout the <a href='https://github.com/patric-r/jvmtop'>source code</a>. Patches are very welcome!<br>
-<br>
-Also have a look at the <a href='https://github.com/patric-r/jvmtop/blob/master/doc/Documentation.md'>documentation</a> or at a <a href='https://github.com/patric-r/jvmtop/blob/master/doc/ExampleOutput.md'>captured live-example</a>.<br>
+**jvmtop** (originally from https://github.com/patric-r/jvmtop) is a lightweight console application to monitor all accessible, running jvms on a machine.
+In a top-like manner, it displays [JVM internal metrics](https://github.com/wongsamuel/jvmtop/blob/master/doc/ExampleOutput.md) (e.g. memory information) of running java processes.
+
+Jvmtop does also include a [CPU console profiler](https://github.com/wongsamuel/jvmtop/blob/master/doc/ConsoleProfiler.md).
+
+It's currently only have been tested with OpenJDK 17 on both Linux and MacOS.
+Jvmtop requires Java 17 or higher.
+
+Jvmtop is open-source. Checkout the [source code](https://github.com/wongsamuel/jvmtop).
+
+Also have a look at the [documentation](https://github.com/wongsamuel/jvmtop/blob/master/doc/Documentation.md) or at a [captured live-example](https://github.com/wongsamuel/jvmtop/blob/master/doc/ExampleOutput.md).
 
 ```
- JvmTop 0.8.0 alpha   amd64  8 cpus, Linux 2.6.32-27, load avg 0.12
- https://github.com/patric-r/jvmtop
+ JvmTop 0.9.0 - java9+ - 12:34:56,  amd64,  4 cpus, Linux 2.6.18-34
+ https://github.com/wongsamuel/jvmtop (forked from patric-r/jvmtop)
 
   PID MAIN-CLASS      HPCUR HPMAX NHCUR NHMAX    CPU     GC    VM USERNAME   #T DL
  3370 rapperSimpleApp  165m  455m  109m  176m  0.12%  0.00% S6U37 web        21
@@ -24,36 +21,31 @@ Also have a look at the <a href='https://github.com/patric-r/jvmtop/blob/master/
 19187 m.jvmtop.JvmTop   20m 3544m   13m  130m  0.93%  0.47% S6U37 web        20
 16733 artup.Bootstrap  159m  455m  166m  304m  0.12%  0.00% S6U37 web        46
 ```
+---
 
-<hr />
+## Installation
+Click on the [releases tab](https://github.com/wongsamuel/jvmtop/releases), download the
+most recent tar.gz archive. Extract it, ensure that the `JAVA_HOME` environment variable points to a valid JDK and run `./jvmtop.sh`.
 
-<h3>Installation</h3>
-Click on the <a href="https://github.com/patric-r/jvmtop/releases"> releases tab</a>, download the
-most recent tar.gz archive. Extract it, ensure that the `JAVA_HOME` environment variable points to a valid JDK and run `./jvmtop.sh`.<br><br>
-Further information can be found in the [INSTALL file](https://github.com/patric-r/jvmtop/blob/master/INSTALL)
-
+Further information can be found in the [INSTALL file](https://github.com/wongsamuel/jvmtop/blob/master/INSTALL)
 
 
-<h3>08/14/2013 jvmtop 0.8.0 released</h3>
-<b>Changes:</b>
-<ul><li>improved attach compatibility for all IBM jvms<br>
-</li><li>fixed wrong CPU/GC values for IBM J9 jvms<br>
-</li><li>in case of unsupported heap size metric retrieval, n/a will be displayed instead of 0m<br>
-</li><li>improved argument parsing, support for short-options, added help (pass <code>--help</code>), see <a href='https://github.com/patric-r/jvmtop/issues/28'>issue #28</a> (now using the great <a href='http://pholser.github.io/jopt-simple'>jopt-simple</a> library)<br>
-</li><li>when passing the <code>--once</code> option, terminal will not be cleared anymore (see <a href='https://github.com/patric-r/jvmtop/issues/27'>issue #27</a>)<br>
-</li><li>improved shell script for guessing the path if a <code>JAVA_HOME</code> environment variable is not present (thanks to <a href='https://groups.google.com/forum/#!topic/jvmtop-discuss/KGg_WpL_yAU'>Markus Kolb</a>)</li></ul>
 
-<a href='https://github.com/patric-r/jvmtop/blob/master/doc/Changelog.md'>Full changelog</a>
+## 05/01/2026 jvmtop 0.9.0 Java 9+ released
+### Changes:
+- New fork
+- Support OpenJDK 17
 
-<hr />
 
-In <a href='https://github.com/patric-r/jvmtop/blob/master/doc/ExampleOutput.md'>VM detail mode</a> it shows you the top CPU-consuming threads, beside detailed metrics:<br>
-<br>
-<br>
+[Full changelog](https://github.com/wongsmauel/jvmtop/blob/master/doc/Changelog.md)
+
+---
+In [VM detail mode](https://github.com/wongsamuel/jvmtop/blob/master/doc/ExampleOutput.md) it shows you the top CPU-consuming threads, beside detailed metrics:
+
 
 ```
- JvmTop 0.8.0 alpha   amd64,  4 cpus, Linux 2.6.18-34
- https://github.com/patric-r/jvmtop
+ JvmTop 0.9.0 - java9+ - 12:34:56,  amd64,  4 cpus, Linux 2.6.18-34
+ https://github.com/wongsamuel/jvmtop (forked from patric-r/jvmtop)
 
  PID 3539: org.apache.catalina.startup.Bootstrap
  ARGS: start
@@ -71,5 +63,5 @@ In <a href='https://github.com/patric-r/jvmtop/blob/master/doc/ExampleOutput.md'
  128026 JMX server connection timeout   TIMED_WAITING  0.00%     0.00%
 ```
 
-<a href='https://github.com/patric-r/jvmtop/issues'>Pull requests / bug reports</a> are always welcome.<br>
-<br>
+<a href=''>[Pull requests / bug reports](https://github.com/wongsamuel/jvmtop/issues)</a> 
+

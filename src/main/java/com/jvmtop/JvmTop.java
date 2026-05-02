@@ -57,7 +57,7 @@ import com.jvmtop.view.VMProfileView;
 public class JvmTop
 {
 
-  public static final String                         VERSION                 = "0.8.0 alpha";
+  public static final String                         VERSION                 = "0.9.0 - java9+";
 
   private Double                                     delay_                  = 1.0;
 
@@ -370,7 +370,6 @@ public class JvmTop
     {
       System.out.println();
     }
-    System.out.println(" https://github.com/patric-r/jvmtop");
     System.out.println();
   }
 

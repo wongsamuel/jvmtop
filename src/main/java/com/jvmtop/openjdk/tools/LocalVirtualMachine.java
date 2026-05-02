@@ -44,10 +44,8 @@ import sun.jvmstat.monitor.MonitoredHost;
 import sun.jvmstat.monitor.MonitoredVm;
 import sun.jvmstat.monitor.MonitoredVmUtil;
 import sun.jvmstat.monitor.VmIdentifier;
-import sun.management.ConnectorAddressLink;
+import jdk.internal.agent.ConnectorAddressLink;
 
-import com.sun.tools.attach.AgentInitializationException;
-import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
@@ -347,54 +345,25 @@ public class LocalVirtualMachine
       throw ioe;
     }
 
-    String home = vm.getSystemProperties().getProperty("java.home");
-
-    // Normally in ${java.home}/jre/lib/management-agent.jar but might
-    // be in ${java.home}/lib in build environments.
-
-    String agent = home + File.separator + "jre" + File.separator + "lib"
-        + File.separator + "management-agent.jar";
-    File f = new File(agent);
-    if (!f.exists())
-    {
-      agent = home + File.separator + "lib" + File.separator
-          + "management-agent.jar";
-      f = new File(agent);
-      if (!f.exists())
-      {
-        throw new IOException("Management agent not found");
-      }
-    }
-
-    agent = f.getCanonicalPath();
-    try
-    {
-      vm.loadAgent(agent, "com.sun.management.jmxremote");
-    }
-    catch (AgentLoadException x)
-    {
-      IOException ioe = new IOException(x.getMessage());
-      ioe.initCause(x);
-      throw ioe;
-    }
-    catch (AgentInitializationException x)
-    {
-      IOException ioe = new IOException(x.getMessage());
-      ioe.initCause(x);
-      throw ioe;
-    }
+    // In Java 8+, we can directly start the local management agent without
+    // needing to manually locate and load management-agent.jar.
+    // This is required for Java 9+ where management-agent.jar no longer exists.
+    this.address = vm.startLocalManagementAgent();
 
     // get the connector address
-    if (J9Mode)
+    if (this.address == null)
     {
-      Properties localProperties = vm.getSystemProperties();
-      this.address = ((String) localProperties
-          .get("com.sun.management.jmxremote.localConnectorAddress"));
-    }
-    else
-    {
-      Properties agentProps = vm.getAgentProperties();
-      address = (String) agentProps.get(LOCAL_CONNECTOR_ADDRESS_PROP);
+      if (J9Mode)
+      {
+        Properties localProperties = vm.getSystemProperties();
+        this.address = ((String) localProperties
+            .get("com.sun.management.jmxremote.localConnectorAddress"));
+      }
+      else
+      {
+        Properties agentProps = vm.getAgentProperties();
+        this.address = (String) agentProps.get(LOCAL_CONNECTOR_ADDRESS_PROP);
+      }
     }
 
     vm.detach();
