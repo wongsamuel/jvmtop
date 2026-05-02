@@ -95,9 +95,8 @@ public class VMProfileView extends AbstractConsoleView
           / cpuSampler_.getTotal() * 100;
       if (!Double.isNaN(wallRatio))
       {
-        System.out.printf(" %6.2f%% (%9.2fs) %s()%n", wallRatio, wallRatio
-            / 100d
-            * cpuSampler_.getUpdateCount() * 0.1d,
+        double cpuTimeSeconds = stats.getHits().get() / 1_000_000_000.0;
+        System.out.printf(" %6.2f%% (%9.2fs) %s()%n", wallRatio, cpuTimeSeconds,
             shortFQN(stats.getClassName(), stats.getMethodName(), w));
       }
     }
