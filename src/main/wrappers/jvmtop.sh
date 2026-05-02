@@ -11,13 +11,12 @@ if [ -z "$JAVA_HOME" ] ; then
         sed 's/\/bin\/java//'`
 fi
 
-TOOLSJAR="$JAVA_HOME/lib/tools.jar"
-
-if [ ! -f "$TOOLSJAR" ] ; then
-        echo "$JAVA_HOME seems to be no JDK!" >&2
-        exit 1
-fi
-
-"$JAVA_HOME"/bin/java $JAVA_OPTS -cp "$DIR/jvmtop.jar:$TOOLSJAR" \
+ "$JAVA_HOME"/bin/java $JAVA_OPTS \
+    --add-modules jdk.management.agent,jdk.internal.jvmstat,jdk.attach \
+    --add-exports jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED \
+    --add-exports jdk.management.agent/jdk.internal.agent=ALL-UNNAMED \
+    --add-exports java.rmi/sun.rmi.server=ALL-UNNAMED \
+    --add-exports java.rmi/sun.rmi.transport=ALL-UNNAMED \
+    -cp "$DIR/jvmtop.jar" \
 com.jvmtop.JvmTop "$@"
 exit $?
