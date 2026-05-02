@@ -57,7 +57,7 @@ import com.jvmtop.view.VMProfileView;
 public class JvmTop
 {
 
-  public static final String                         VERSION                 = "0.9.0 - java9+";
+  public static final String                         VERSION                 = "0.9.1 - java9+";
 
   private Double                                     delay_                  = 1.0;
 

@@ -26,7 +26,9 @@ import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,8 +50,6 @@ public class CPUSampler
 
   private ConcurrentMap<String, MethodStats> data_         = new ConcurrentHashMap<String, MethodStats>();
 
-  private long                               beginCPUTime_ = 0;
-
   private AtomicLong                         totalThreadCPUTime_ = new AtomicLong(
                                                                      0);
 
@@ -68,8 +68,6 @@ public class CPUSampler
   private AtomicLong                         updateCount_       = new AtomicLong(
                                                                      0);
 
-  private VMInfo                             vmInfo_;
-
   /**
    * @param threadMxBean
    * @throws Exception
@@ -78,8 +76,6 @@ public class CPUSampler
   {
     super();
     threadMxBean_ = vmInfo.getThreadMXBean();
-    beginCPUTime_ = vmInfo.getProxyClient().getProcessCpuTime();
-    vmInfo_ = vmInfo;
   }
 
   public List<MethodStats> getTop(int limit)
@@ -97,9 +93,12 @@ public class CPUSampler
   public void update() throws Exception
   {
     boolean samplesAcquired = false;
+    Set<Long> activeThreadIds = new HashSet<>();
+
     for (ThreadInfo ti : threadMxBean_.dumpAllThreads(false, false))
     {
       long cpuTime = threadMxBean_.getThreadCpuTime(ti.getThreadId());
+      activeThreadIds.add(ti.getThreadId());
       Long tCPUTime = threadCPUTime.get(ti.getThreadId());
       if (tCPUTime == null)
       {
@@ -107,35 +106,35 @@ public class CPUSampler
       }
       else
       {
-      Long deltaCpuTime = (cpuTime - tCPUTime);
+        Long deltaCpuTime = (cpuTime - tCPUTime);
 
-      if (ti.getStackTrace().length > 0
-          && ti.getThreadState() == State.RUNNABLE
-            ) {
+        if (ti.getStackTrace().length > 0 && ti.getThreadState() == State.RUNNABLE) {
           for (StackTraceElement stElement : ti.getStackTrace()) {
             if (isReallySleeping(stElement)) {
               break;
             }
             if (isFiltered(stElement)) {
-            continue;
-          }
-          String key = stElement.getClassName() + "."
-              + stElement.getMethodName();
-          data_.putIfAbsent(key, new MethodStats(stElement.getClassName(),
-              stElement.getMethodName()));
-          data_.get(key).getHits().addAndGet(deltaCpuTime);
-          totalThreadCPUTime_.addAndGet(deltaCpuTime);
+              continue;
+            }
+            String key = stElement.getClassName() + "." + stElement.getMethodName();
+            MethodStats stats = data_.computeIfAbsent(key, k -> new MethodStats(stElement.getClassName(), stElement.getMethodName()));
+            stats.getHits().addAndGet(deltaCpuTime);
+            totalThreadCPUTime_.addAndGet(deltaCpuTime);
             samplesAcquired = true;
-          break;
+            break;
+          }
         }
-      }
       }
       threadCPUTime.put(ti.getThreadId(), cpuTime);
     }
+
+    // Prevent memory leak by clearing out terminated threads
+    threadCPUTime.keySet().retainAll(activeThreadIds);
+
     if (samplesAcquired)
-{
-  updateCount_.incrementAndGet();
-}
+    {
+      updateCount_.incrementAndGet();
+    }
   }
 
   public Long getUpdateCount()
@@ -157,4 +156,3 @@ public class CPUSampler
     return false;
   }
 }
-
