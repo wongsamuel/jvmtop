@@ -57,7 +57,7 @@ public class CPUSampler
   //TODO: these exception list should be expanded to the most common 3rd-party library packages
   private List<String>                       filter        = Arrays
                                                                .asList(new String[] {
-      "org.eclipse.", "org.apache.", "java.", "sun.", "com.sun.", "javax.",
+      "org.eclipse.", "org.apache.", "java.", "sun.", "com.sun.", "javax.", "jdk.",
       "oracle.", "com.trilead.", "org.junit.", "org.mockito.",
       "org.hibernate.", "com.ibm.", "com.caucho."
 
